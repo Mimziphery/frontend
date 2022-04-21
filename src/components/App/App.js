@@ -1,11 +1,14 @@
 import './App.css';
 import React, {Component} from "react";
-import { BrowserRouter as Router, Route, Switch, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Redirect, Link } from 'react-router-dom';
 
 import Books from "../Books/BookList/books";
 import Categories from "../Categories/categories";
+import Authors from "../Authors/AuthorsList/authors";
+import BooksAdd from "../Books/BooksAdd/booksAdd";
 import LibraryService from "../../repository/libraryRepository";
 import Header from "../Header/header";
+import BooksEdit from "../Books/BooksEdit/booksEdit";
 
 class App extends Component{
 
@@ -13,21 +16,61 @@ class App extends Component{
         super(props);
         this.state = {
             books: [],
-            categories: []
+            categories: [],
+            authors: [],
+            selectedBook: {}
         }
     }
 
     render() {
         return (
-            <div>
+
                 <Router>
-                    <Header />
-                    <Route path="/books" component={Books} />
+                    <Header/>
+                    <main>
+                        <div className="container">
+
+                            <Route path={"/categories"} exact render={() =>
+                                <Categories categories={this.state.categories}/>}/>
+
+
+
+                            <Route path={"/books/edit/:id"} exact render={() =>
+                                <BooksEdit categories={this.state.categories}
+                                             authors={this.state.authors}
+                                             onEditBook={this.editBook}
+                                             book={this.state.selectedBook}/>}/>
+
+                            <Route path={"/books/add"} exact render={() =>
+                                <BooksAdd categories={this.state.categories}
+                                            authors={this.state.authors}
+                                            onAddBook={this.addBook}/>}/>
+
+                            <Route path={"/books"} exact render={() =>
+                                <Books books={this.state.books}
+                                          onDelete={this.deleteBook}
+                                          onEdit={this.getBook}
+                                            onMarkBook={this.markBook}/>}/>
+
+                            <Redirect to={"/books"}/>
+
+
+
+                        </div>
+                    </main>
 
                 </Router>
-            </div>
+
         );
     }
+
+    componentDidMount() {
+        this.loadBooks();
+        this.loadCategories();
+        this.loadAuthors();
+    }
+
+
 
     loadBooks = () =>{
         LibraryService.fetchBooks()
@@ -39,6 +82,17 @@ class App extends Component{
             });
     }
 
+    loadAuthors = () => {
+        LibraryService.fetchAuthors()
+            .then((data) => {
+                this.setState({
+                    authors: data.data
+                })
+            });
+    }
+
+
+
     loadCategories = () => {
         LibraryService.fetchCategories()
             .then((data) => {
@@ -47,11 +101,42 @@ class App extends Component{
                 })
             });
     }
-
-    componentDidMount() {
-        this.loadBooks();
-        this.loadCategories();
+    deleteBook = (id) => {
+        LibraryService.deleteBook(id)
+            .then(() => {
+                this.loadBooks();
+            });
     }
+
+    addBook = (name, category, author, availableCopies) => {
+        LibraryService.addBook(name, category, author, availableCopies)
+            .then(() => {
+                this.loadBooks();
+            });
+    }
+    getBook = (id) => {
+        LibraryService.getBook(id)
+            .then((data) => {
+                this.setState({
+                    selectedBook: data.data
+                })
+            })
+    }
+
+
+    editBook = (id, name, category, author, availableCopies) => {
+        LibraryService.editBook(id, name, category, author, availableCopies)
+            .then(() => {
+                this.loadBooks();
+            });
+    }
+    markBook = (id) => {
+        LibraryService.markBook(id)
+            .then(() => {
+                this.loadBooks();
+            });
+    }
+
 
 }
 
