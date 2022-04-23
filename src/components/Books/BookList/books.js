@@ -29,7 +29,6 @@ class Books extends React.Component {
                                 <th scope={"col"}>Name</th>
                                 <th scope={"col"}>Category</th>
                                 <th scope={"col"}>Author</th>
-                                <th scope={"col"}></th>
                                 <th scope={"col"}>Available Copies</th>
 
                             </tr>
@@ -75,7 +74,7 @@ class Books extends React.Component {
     getBooksPage = (offset, nextPageOffset) => {
         return this.props.books.map((term, index) => {
             return (
-                <BookTerm term={term} onDelete={this.props.onDelete} onEdit={this.props.onEdit}/>
+                <BookTerm term={term} onDelete={this.props.onDelete} onEdit={this.props.onEdit} onMark={this.props.onMark}/>
             );
         }).filter((book, index) => {
             return index >= offset && index < nextPageOffset;

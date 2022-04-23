@@ -46,13 +46,20 @@ class App extends Component{
                                             authors={this.state.authors}
                                             onAddBook={this.addBook}/>}/>
 
+                            <Route path={"/"} exact render={() =>
+                                <Books books={this.state.books}
+                                       onDelete={this.deleteBook}
+                                       onEdit={this.getBook}
+                                       onMark={this.markBook}/>}/>
+
                             <Route path={"/books"} exact render={() =>
                                 <Books books={this.state.books}
                                           onDelete={this.deleteBook}
                                           onEdit={this.getBook}
-                                            onMarkBook={this.markBook}/>}/>
+                                            onMark={this.markBook}/>}/>
 
-                            <Redirect to={"/books"}/>
+
+
 
 
 
